@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Notice Board — CampusConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="fa-solid fa-bullhorn text-danger me-2"></i> Smart Notice Board
+            </h3>
+            <p class="text-muted small mb-0">Official academic, examination, hostel, and event notices</p>
+        </div>
+
+        <!-- Scope Switch (My Branch vs All Notices) -->
+        <div class="btn-group shadow-sm rounded-pill p-1 bg-white border" role="group">
+            <a href="{{ url_for('notices', scope='my', category=current_category, search=search_query) }}" 
+               class="btn btn-sm rounded-pill px-3 {{ 'btn-primary' if current_scope == 'my' else 'btn-light' }}">
+               <i class="fa-solid fa-user-tag me-1"></i> My Branch ({{ student.branch }} • {{ student.year }})
+            </a>
+            <a href="{{ url_for('notices', scope='all', category=current_category, search=search_query) }}" 
+               class="btn btn-sm rounded-pill px-3 {{ 'btn-primary' if current_scope == 'all' else 'btn-light' }}">
+               <i class="fa-solid fa-globe me-1"></i> All College Notices
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters & Search Bar -->
+    <div class="card p-3 border-0 shadow-sm mb-4 rounded-4">
+        <div class="row g-3 align-items-center">
+            <!-- Category Pills -->
+            <div class="col-lg-8">
+                <div class="nav nav-filter">
+                    {% set categories = [('all', 'All Notices'), ('Exam', 'Exams'), ('Assignment', 'Assignments'), ('Academic', 'Academic'), ('Placement', 'Placements'), ('Hostel', 'Hostel'), ('Emergency', 'Emergency')] %}
+                    {% for cat_val, cat_label in categories %}
+                        <a href="{{ url_for('notices', scope=current_scope, category=cat_val, search=search_query) }}" 
+                           class="nav-link {{ 'active' if current_category == cat_val else '' }}">
+                            {{ cat_label }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Search Form -->
+            <div class="col-lg-4">
+                <form method="GET" action="{{ url_for('notices') }}">
+                    <input type="hidden" name="scope" value="{{ current_scope }}">
+                    <input type="hidden" name="category" value="{{ current_category }}">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Search notices..." value="{{ search_query }}">
+                        <button class="btn btn-outline-primary" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notices Grid -->
+    <div class="row g-4">
+        {% for notice in notices %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 p-4 card-hover border-0 shadow-sm rounded-4 d-flex flex-column {{ 'border-start border-danger border-4' if notice.priority == 'Urgent' else '' }}">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge badge-category cat-{{ notice.category|lower }}">{{ notice.category }}</span>
+                    {% if notice.priority == 'Urgent' %}
+                        <span class="badge bg-danger">🚨 URGENT</span>
+                    {% elif notice.priority == 'High' %}
+                        <span class="badge bg-warning text-dark">⚠️ HIGH</span>
+                    {% else %}
+                        <span class="badge bg-light text-muted border">Normal</span>
+                    {% endif %}
+                </div>
+
+                <h5 class="fw-bold text-dark mt-2 mb-2">{{ notice.title }}</h5>
+                <p class="text-muted small flex-grow-1">{{ notice.description }}</p>
+
+                <div class="pt-3 border-top mt-2">
+                    <div class="d-flex justify-content-between align-items-center small text-muted mb-2">
+                        <span><i class="fa-solid fa-building-columns me-1"></i> Dept: <strong>{{ notice.branch }}</strong></span>
+                        <span><i class="fa-solid fa-graduation-cap me-1"></i> Year: <strong>{{ notice.year }}</strong></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-{{ notice.deadline_info.badge_class }}">{{ notice.deadline_info.text }}</span>
+                        
+                        {% if notice.attachment_link %}
+                            <a href="{{ notice.attachment_link }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                <i class="fa-solid fa-arrow-down me-1"></i> Download
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="card p-5 text-center border-0 shadow-sm rounded-4">
+                <i class="fa-solid fa-folder-open text-muted fs-1 mb-3"></i>
+                <h5 class="fw-bold text-dark">No Notices Found</h5>
+                <p class="text-muted small">No announcements match your selected filters or search query.</p>
+                <div>
+                    <a href="{{ url_for('notices', scope='all', category='all') }}" class="btn btn-outline-primary rounded-pill btn-sm px-4">
+                        Reset Filters
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

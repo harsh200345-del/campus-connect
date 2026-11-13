@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile & Skills — CampusConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card p-4 p-md-5 border-0 shadow-sm rounded-4">
+                <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fs-3 fw-bold" style="width: 60px; height: 60px;">
+                        {{ student.name[0] }}
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0 text-dark">{{ student.name }}</h4>
+                        <p class="text-muted small mb-0">{{ student.email }}</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-info border-0 rounded-3 small mb-4">
+                    <i class="fa-solid fa-circle-info me-2"></i>
+                    <strong>Recommendation Tip:</strong> Updating your branch, academic year, and technical skills will instantly adjust your personalized feed on the dashboard and Opportunity Hub.
+                </div>
+
+                <form method="POST" action="{{ url_for('profile') }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-muted">Full Name</label>
+                            <input type="text" class="form-control" name="name" value="{{ student.name }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-muted">Email (Read Only)</label>
+                            <input type="email" class="form-control bg-light" value="{{ student.email }}" readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-muted">Course Degree</label>
+                            <select class="form-select" name="course">
+                                {% for c in ['B.Tech', 'BCA', 'MCA', 'M.Tech', 'B.Sc'] %}
+                                    <option value="{{ c }}" {{ 'selected' if student.course == c else '' }}>{{ c }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-muted">Branch / Dept</label>
+                            <select class="form-select" name="branch">
+                                {% for b in ['CSE', 'IT', 'AI/DS', 'ECE', 'ME', 'CE', 'EE'] %}
+                                    <option value="{{ b }}" {{ 'selected' if student.branch == b else '' }}>{{ b }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-muted">Academic Year</label>
+                            <select class="form-select" name="year">
+                                {% for y in ['1st Year', '2nd Year', '3rd Year', '4th Year'] %}
+                                    <option value="{{ y }}" {{ 'selected' if student.year == y else '' }}>{{ y }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">
+                                Technical Skills <span class="text-primary">(Comma-separated)</span>
+                            </label>
+                            <input type="text" class="form-control" id="skillsInput" name="skills" value="{{ student.skills }}" placeholder="e.g. Python, Web Development, SQL, Docker, React">
+                            
+                            <div class="mt-2">
+                                <small class="text-muted me-2">Quick Add:</small>
+                                <button type="button" class="btn btn-sm btn-light border me-1 mb-1" onclick="addSkill('Python')">+ Python</button>
+                                <button type="button" class="btn btn-sm btn-light border me-1 mb-1" onclick="addSkill('Web Development')">+ Web Dev</button>
+                                <button type="button" class="btn btn-sm btn-light border me-1 mb-1" onclick="addSkill('Machine Learning')">+ ML</button>
+                                <button type="button" class="btn btn-sm btn-light border me-1 mb-1" onclick="addSkill('Cloud')">+ Cloud</button>
+                                <button type="button" class="btn btn-sm btn-light border me-1 mb-1" onclick="addSkill('Embedded Systems')">+ Embedded</button>
+                                <button type="button" class="btn btn-sm btn-light border me-1 mb-1" onclick="addSkill('C++')">+ C++</button>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-4 text-end">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-light me-2 rounded-pill px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                                <i class="fa-solid fa-floppy-disk me-1"></i> Save Changes & Re-score
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addSkill(skill) {
+    const input = document.getElementById('skillsInput');
+    let current = input.value.trim();
+    if (!current) {
+        input.value = skill;
+    } else {
+        const skills = current.split(',').map(s => s.trim().toLowerCase());
+        if (!skills.includes(skill.toLowerCase())) {
+            input.value = current + ', ' + skill;
+        }
+    }
+}
+</script>
+{% endblock %}

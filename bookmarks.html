@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Saved Opportunities — CampusConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="fa-solid fa-bookmark text-warning me-2"></i> Saved Opportunities
+            </h3>
+            <p class="text-muted small mb-0">Track and apply to your shortlisted hackathons, internships, and scholarships</p>
+        </div>
+        <a href="{{ url_for('opportunities') }}" class="btn btn-outline-primary rounded-pill px-3">
+            <i class="fa-solid fa-plus me-1"></i> Browse More
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {% for opp in opportunities %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 p-4 border-0 shadow-sm rounded-4 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-semibold">
+                        {{ opp.category }}
+                    </span>
+                    <form method="POST" action="{{ url_for('toggle_bookmark', opp_id=opp.id) }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="Remove from saved">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="text-muted small fw-semibold mb-1">{{ opp.organization }}</div>
+                <h5 class="fw-bold text-dark mb-2">{{ opp.title }}</h5>
+                <p class="text-muted small flex-grow-1">{{ opp.description }}</p>
+
+                <div class="pt-3 border-top mt-auto">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-{{ opp.deadline_info.badge_class }}">{{ opp.deadline_info.text }}</span>
+                        {% if opp.stipend_prize %}
+                            <span class="small fw-semibold text-dark">{{ opp.stipend_prize }}</span>
+                        {% endif %}
+                    </div>
+
+                    {% if opp.apply_link %}
+                    <a href="{{ opp.apply_link }}" target="_blank" class="btn btn-success w-100 rounded-pill fw-semibold btn-sm mt-1">
+                        Apply Now <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="card p-5 text-center border-0 shadow-sm rounded-4">
+                <i class="fa-regular fa-bookmark text-muted fs-1 mb-3"></i>
+                <h5 class="fw-bold text-dark">No Saved Opportunities Yet</h5>
+                <p class="text-muted small">You haven't bookmarked any opportunities. Browse the hub and click the bookmark icon to save items.</p>
+                <div>
+                    <a href="{{ url_for('opportunities') }}" class="btn btn-primary rounded-pill px-4">
+                        Explore Opportunities
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

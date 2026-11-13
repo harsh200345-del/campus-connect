@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard — CampusConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    
+    <!-- Student Header Banner -->
+    <div class="card bg-white border-0 shadow-sm p-4 mb-4 rounded-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 54px; height: 54px;">
+                        {{ student.name[0] }}
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">Hello, {{ student.name }} 👋</h3>
+                        <p class="text-muted small mb-0">
+                            <strong>{{ student.course }} {{ student.branch }}</strong> • {{ student.year }} • Personalized Student Feed
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-muted small fw-semibold me-2"><i class="fa-solid fa-tags text-primary me-1"></i> Active Skills:</span>
+                    {% if student.skills %}
+                        {% for skill in student.skills.split(',') %}
+                            {% if skill.strip() %}
+                                <span class="skill-tag matched"><i class="fa-solid fa-check me-1"></i>{{ skill.strip() }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted small italic">No skills added yet.</span>
+                    {% endif %}
+                    <a href="{{ url_for('profile') }}" class="btn btn-sm btn-link text-decoration-none py-0 ps-2" style="font-size: 0.8rem;">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit Skills
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <div class="d-inline-flex gap-2">
+                    <a href="{{ url_for('bookmarks') }}" class="btn btn-outline-warning text-dark border fw-semibold rounded-pill px-3 py-2 shadow-sm">
+                        <i class="fa-solid fa-bookmark text-warning me-1"></i> Saved (<span class="fw-bold">{{ bookmarked_count }}</span>)
+                    </a>
+                    <a href="{{ url_for('notices') }}" class="btn btn-outline-primary fw-semibold rounded-pill px-3 py-2 shadow-sm">
+                        <i class="fa-solid fa-bullhorn me-1"></i> All Notices
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Urgent Broadcast Banner (If present) -->
+    {% if urgent_banner %}
+    <div class="urgent-banner mb-4 shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center">
+            <span class="badge bg-danger fs-6 me-3"><i class="fa-solid fa-triangle-exclamation me-1"></i> URGENT</span>
+            <div>
+                <strong class="text-dark">{{ urgent_banner.title }}</strong>
+                <div class="text-muted small text-truncate" style="max-width: 600px;">{{ urgent_banner.description }}</div>
+            </div>
+        </div>
+        <a href="{{ url_for('notices') }}" class="btn btn-sm btn-danger rounded-pill px-3">View Notice</a>
+    </div>
+    {% endif %}
+
+    <!-- Urgent Deadlines Bar -->
+    {% if urgent_deadlines %}
+    <div class="alert alert-warning border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+            <i class="fa-solid fa-stopwatch text-danger fs-3"></i>
+            <div>
+                <h6 class="fw-bold mb-0 text-dark">Deadline Radar: {{ urgent_deadlines|length }} Opportunities Closing Soon!</h6>
+                <div class="text-muted small">
+                    {% for opp in urgent_deadlines[:2] %}
+                        <span class="me-3">⚡ <strong>{{ opp.title }}</strong> ({{ opp.deadline_info.text }})</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <a href="{{ url_for('opportunities') }}" class="btn btn-sm btn-outline-dark rounded-pill fw-semibold px-3">Check All Deadlines</a>
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
+        <!-- Left Column: Top Recommended Opportunities -->
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="fa-solid fa-crosshairs text-success me-2"></i> Recommended For You
+                    </h5>
+                    <small class="text-muted">Smart ranking based on {{ student.branch }} + {{ student.year }} + your skills</small>
+                </div>
+                <a href="{{ url_for('opportunities') }}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                    View All Hub <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            <div class="row g-3">
+                {% for opp in top_recommended %}
+                <div class="col-12">
+                    <div class="card p-3 card-hover border-0 shadow-sm rounded-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-semibold">
+                                    {{ opp.category }}
+                                </span>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="fa-solid fa-building me-1 text-muted"></i>{{ opp.organization }}
+                                </span>
+                                <!-- Recommendation Score Badge -->
+                                {% if opp.match_score >= 70 %}
+                                    <span class="match-score-pill high">
+                                        <i class="fa-solid fa-fire text-danger"></i> {{ opp.match_score }}% Match
+                                    </span>
+                                {% else %}
+                                    <span class="match-score-pill medium">
+                                        <i class="fa-solid fa-star text-warning"></i> {{ opp.match_score }}% Match
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Bookmark Toggle Button -->
+                            <button class="btn btn-sm btn-bookmark-toggle {{ 'btn-warning text-dark' if opp.is_bookmarked else 'btn-outline-secondary' }}" 
+                                    data-opp-id="{{ opp.id }}" title="Save opportunity">
+                                <i class="{{ 'fa-solid' if opp.is_bookmarked else 'fa-regular' }} fa-bookmark"></i>
+                            </button>
+                        </div>
+
+                        <h5 class="fw-bold text-dark mb-1">{{ opp.title }}</h5>
+                        <p class="text-muted small mb-2">{{ opp.description }}</p>
+
+                        <!-- Matched skills tags -->
+                        {% if opp.matched_skills %}
+                        <div class="mb-2">
+                            <small class="text-success fw-semibold me-1"><i class="fa-solid fa-circle-check"></i> Matched Skills:</small>
+                            {% for ms in opp.matched_skills %}
+                                <span class="skill-tag matched">{{ ms }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-2 flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-3 small">
+                                {% if opp.stipend_prize %}
+                                    <span class="fw-semibold text-dark"><i class="fa-solid fa-award text-warning me-1"></i>{{ opp.stipend_prize }}</span>
+                                {% endif %}
+                                <span class="badge bg-{{ opp.deadline_info.badge_class }}">{{ opp.deadline_info.text }}</span>
+                            </div>
+
+                            {% if opp.apply_link %}
+                            <a href="{{ opp.apply_link }}" target="_blank" class="btn btn-sm btn-primary rounded-pill px-3">
+                                Apply Now <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-12">
+                    <div class="card p-4 text-center border-0 shadow-sm">
+                        <i class="fa-solid fa-magnifying-glass text-muted fs-2 mb-2"></i>
+                        <p class="text-muted mb-0">No active opportunities found matching your criteria right now.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right Column: Filtered Department Notices & Events -->
+        <div class="col-lg-4">
+            
+            <!-- Smart Notices Widget -->
+            <div class="card border-0 shadow-sm p-3 mb-4 rounded-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <div>
+                        <h6 class="fw-bold mb-0 text-dark">
+                            <i class="fa-solid fa-bullhorn text-danger me-2"></i> {{ student.branch }} Notice Board
+                        </h6>
+                        <small class="text-muted">Targeted for {{ student.branch }} • {{ student.year }}</small>
+                    </div>
+                    <a href="{{ url_for('notices') }}" class="btn btn-sm btn-link text-decoration-none">More</a>
+                </div>
+
+                <div class="list-group list-group-flush">
+                    {% for notice in notices %}
+                    <div class="list-group-item px-0 py-2 border-bottom-0">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="badge badge-category cat-{{ notice.category|lower }}">{{ notice.category }}</span>
+                            {% if notice.priority == 'Urgent' %}
+                                <span class="badge bg-danger" style="font-size: 0.65rem;">URGENT</span>
+                            {% elif notice.priority == 'High' %}
+                                <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">HIGH</span>
+                            {% endif %}
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1" style="font-size: 0.92rem;">{{ notice.title }}</h6>
+                        <p class="text-muted small mb-1 text-truncate">{{ notice.description }}</p>
+                        {% if notice.attachment_link %}
+                            <a href="{{ notice.attachment_link }}" target="_blank" class="small text-primary text-decoration-none">
+                                <i class="fa-solid fa-paperclip me-1"></i> Attachment
+                            </a>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-3 text-muted small">No specific notices for your department today.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Campus Events Widget -->
+            <div class="card border-0 shadow-sm p-3 rounded-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="fa-solid fa-calendar-days text-info me-2"></i> Campus Calendar
+                    </h6>
+                    <a href="{{ url_for('events') }}" class="btn btn-sm btn-link text-decoration-none">View All</a>
+                </div>
+
+                <div class="list-group list-group-flush">
+                    {% for event in upcoming_events %}
+                    <div class="list-group-item px-0 py-2 border-bottom-0">
+                        <div class="d-flex align-items-start gap-2">
+                            <div class="bg-info-subtle text-info text-center p-2 rounded-3" style="min-width: 50px;">
+                                <div class="fw-bold" style="font-size: 1.1rem; line-height: 1;">{{ event.event_date[8:10] }}</div>
+                                <div class="small fw-semibold text-uppercase" style="font-size: 0.65rem;">{{ event.event_date[5:7] }}</div>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0" style="font-size: 0.88rem;">{{ event.title }}</h6>
+                                <div class="small text-muted"><i class="fa-solid fa-location-dot me-1"></i>{{ event.venue or 'Campus' }}</div>
+                                <div class="small text-secondary">{{ event.time }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

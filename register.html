@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Student Registration — CampusConnect{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card p-4 p-md-5 border-0 shadow-sm rounded-4">
+                <div class="text-center mb-4">
+                    <div class="bg-success-subtle text-success d-inline-flex p-3 rounded-circle mb-3">
+                        <i class="fa-solid fa-id-card fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold">Create Student Account</h3>
+                    <p class="text-muted small">Personalize your notices, hackathons, and internship feed</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-muted">Full Name</label>
+                            <input type="text" class="form-control" name="name" placeholder="e.g. Harsh Pandey" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-muted">College Email</label>
+                            <input type="email" class="form-control" name="email" placeholder="harsh@college.edu" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">Password</label>
+                            <input type="password" class="form-control" name="password" placeholder="Create a secure password" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-muted">Course</label>
+                            <select class="form-select" name="course">
+                                <option value="B.Tech" selected>B.Tech</option>
+                                <option value="BCA">BCA</option>
+                                <option value="MCA">MCA</option>
+                                <option value="M.Tech">M.Tech</option>
+                                <option value="B.Sc">B.Sc CS/IT</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-muted">Branch / Dept</label>
+                            <select class="form-select" name="branch">
+                                <option value="CSE" selected>CSE (Computer Science)</option>
+                                <option value="IT">IT (Information Tech)</option>
+                                <option value="AI/DS">AI & Data Science</option>
+                                <option value="ECE">ECE (Electronics & Comm)</option>
+                                <option value="ME">Mechanical Engg</option>
+                                <option value="CE">Civil Engg</option>
+                                <option value="EE">Electrical Engg</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-muted">Academic Year</label>
+                            <select class="form-select" name="year">
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year" selected>2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">
+                                Technical Skills <span class="text-primary">(Crucial for Personalized Opportunity Matching)</span>
+                            </label>
+                            <input type="text" class="form-control" id="skillsInput" name="skills" placeholder="e.g. Python, Web Development, SQL, Git, React">
+                            <div class="mt-2">
+                                <small class="text-muted me-2">Quick Add Skills:</small>
+                                <button type="button" class="btn btn-sm btn-light border skill-pill me-1 mb-1" onclick="addSkill('Python')">+ Python</button>
+                                <button type="button" class="btn btn-sm btn-light border skill-pill me-1 mb-1" onclick="addSkill('Web Development')">+ Web Dev</button>
+                                <button type="button" class="btn btn-sm btn-light border skill-pill me-1 mb-1" onclick="addSkill('Machine Learning')">+ ML / AI</button>
+                                <button type="button" class="btn btn-sm btn-light border skill-pill me-1 mb-1" onclick="addSkill('Data Structures')">+ DSA</button>
+                                <button type="button" class="btn btn-sm btn-light border skill-pill me-1 mb-1" onclick="addSkill('C++')">+ C++</button>
+                                <button type="button" class="btn btn-sm btn-light border skill-pill me-1 mb-1" onclick="addSkill('Embedded Systems')">+ Embedded</button>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold rounded-pill shadow-sm">
+                                Create Account & View Recommendations <i class="fa-solid fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4 border-top pt-3">
+                    <p class="text-muted small mb-0">Already have an account? 
+                        <a href="{{ url_for('login') }}" class="fw-bold text-primary text-decoration-none">Log in here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addSkill(skill) {
+    const input = document.getElementById('skillsInput');
+    let current = input.value.trim();
+    if (!current) {
+        input.value = skill;
+    } else {
+        const skills = current.split(',').map(s => s.trim().toLowerCase());
+        if (!skills.includes(skill.toLowerCase())) {
+            input.value = current + ', ' + skill;
+        }
+    }
+}
+</script>
+{% endblock %}

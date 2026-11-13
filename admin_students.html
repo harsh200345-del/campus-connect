@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Students Directory — Admin CampusConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="fa-solid fa-users text-primary me-2"></i> Registered Students Directory
+            </h3>
+            <p class="text-muted small mb-0">Total {{ students|length }} students registered on CampusConnect</p>
+        </div>
+        <div>
+            <span class="badge bg-primary fs-6 rounded-pill px-3 py-2">
+                <i class="fa-solid fa-user-graduate me-1"></i> {{ students|length }} Students
+            </span>
+        </div>
+    </div>
+
+    <!-- Students Table -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr class="small text-muted">
+                        <th>STUDENT NAME & EMAIL</th>
+                        <th>COURSE & BRANCH</th>
+                        <th>ACADEMIC YEAR</th>
+                        <th>TECHNICAL SKILLS (FOR RECOMMENDATION)</th>
+                        <th>REGISTERED ON</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stu in students %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; font-size: 0.85rem;">
+                                    {{ stu.name[0] }}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">{{ stu.name }}</div>
+                                    <div class="small text-muted">{{ stu.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ stu.course }} - {{ stu.branch }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info-subtle text-info">{{ stu.year }}</span>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-wrap" style="max-width: 350px;">
+                                {% if stu.skills %}
+                                    {% for s in stu.skills.split(',') %}
+                                        {% if s.strip() %}
+                                            <span class="skill-tag">{{ s.strip() }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted small">No skills listed</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="small text-muted">{{ stu.created_at[:10] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">No students registered yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

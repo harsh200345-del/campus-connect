@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Opportunity Hub — CampusConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="fa-solid fa-briefcase text-success me-2"></i> College Opportunity Hub
+            </h3>
+            <p class="text-muted small mb-0">Hackathons, internships, scholarships, competitions, and workshops ranked for you</p>
+        </div>
+        <div>
+            <a href="{{ url_for('bookmarks') }}" class="btn btn-outline-warning text-dark border rounded-pill px-3 shadow-sm">
+                <i class="fa-solid fa-bookmark text-warning me-1"></i> View Saved
+            </a>
+        </div>
+    </div>
+
+    <!-- Category Filters & Search Bar -->
+    <div class="card p-3 border-0 shadow-sm mb-4 rounded-4">
+        <div class="row g-3 align-items-center">
+            <!-- Category Pills -->
+            <div class="col-lg-8">
+                <div class="nav nav-filter">
+                    {% set categories = [('all', 'All Opportunities'), ('Hackathon', '🏆 Hackathons'), ('Internship', '💼 Internships'), ('Competition', '🎤 Competitions'), ('Scholarship', '🎓 Scholarships'), ('Workshop', '🧑💻 Workshops'), ('Placement', '🏢 Placements')] %}
+                    {% for cat_val, cat_label in categories %}
+                        <a href="{{ url_for('opportunities', category=cat_val, search=search_query) }}" 
+                           class="nav-link {{ 'active' if current_category == cat_val else '' }}">
+                            {{ cat_label }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Search Form -->
+            <div class="col-lg-4">
+                <form method="GET" action="{{ url_for('opportunities') }}">
+                    <input type="hidden" name="category" value="{{ current_category }}">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Search by skill, title..." value="{{ search_query }}">
+                        <button class="btn btn-outline-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Opportunities Grid -->
+    <div class="row g-4">
+        {% for opp in opportunities %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 p-4 card-hover border-0 shadow-sm rounded-4 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="d-flex align-items-center gap-1 flex-wrap">
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-semibold">
+                            {{ opp.category }}
+                        </span>
+                        {% if opp.match_score >= 70 %}
+                            <span class="match-score-pill high">
+                                <i class="fa-solid fa-fire text-danger"></i> {{ opp.match_score }}% Match
+                            </span>
+                        {% else %}
+                            <span class="match-score-pill medium">
+                                <i class="fa-solid fa-star text-warning"></i> {{ opp.match_score }}% Match
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Bookmark Toggle Button -->
+                    <button class="btn btn-sm btn-bookmark-toggle {{ 'btn-warning text-dark' if opp.is_bookmarked else 'btn-outline-secondary' }}" 
+                            data-opp-id="{{ opp.id }}" title="Bookmark this opportunity">
+                        <i class="{{ 'fa-solid' if opp.is_bookmarked else 'fa-regular' }} fa-bookmark"></i>
+                    </button>
+                </div>
+
+                <div class="text-muted small fw-semibold mb-1">
+                    <i class="fa-solid fa-building me-1"></i> {{ opp.organization }}
+                </div>
+                <h5 class="fw-bold text-dark mb-2">{{ opp.title }}</h5>
+                <p class="text-muted small flex-grow-1">{{ opp.description }}</p>
+
+                <!-- Eligibility -->
+                <div class="small text-muted mb-2">
+                    <i class="fa-solid fa-user-check text-primary me-1"></i> Eligible: 
+                    <strong>{{ opp.eligibility_branch }}</strong> • <strong>{{ opp.eligibility_year }}</strong>
+                </div>
+
+                <!-- Required Skills -->
+                {% if opp.required_skills %}
+                <div class="mb-3">
+                    <div class="small text-muted mb-1">Required Skills:</div>
+                    <div class="d-flex flex-wrap">
+                        {% for skill in opp.required_skills.split(',') %}
+                            {% set s_clean = skill.strip() %}
+                            {% if s_clean %}
+                                {% if s_clean.title() in opp.matched_skills or s_clean in opp.matched_skills %}
+                                    <span class="skill-tag matched"><i class="fa-solid fa-check me-1"></i>{{ s_clean }}</span>
+                                {% else %}
+                                    <span class="skill-tag">{{ s_clean }}</span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Footer Card details -->
+                <div class="pt-3 border-top mt-auto">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        {% if opp.stipend_prize %}
+                            <span class="fw-bold text-dark small">
+                                <i class="fa-solid fa-award text-warning me-1"></i>{{ opp.stipend_prize }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted small"><i class="fa-solid fa-certificate me-1"></i>Certificate</span>
+                        {% endif %}
+                        <span class="badge bg-{{ opp.deadline_info.badge_class }}">{{ opp.deadline_info.text }}</span>
+                    </div>
+
+                    {% if opp.apply_link %}
+                    <a href="{{ opp.apply_link }}" target="_blank" class="btn btn-primary w-100 rounded-pill fw-semibold btn-sm mt-1">
+                        Apply on Official Portal <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="card p-5 text-center border-0 shadow-sm rounded-4">
+                <i class="fa-solid fa-magnifying-glass text-muted fs-1 mb-3"></i>
+                <h5 class="fw-bold text-dark">No Opportunities Found</h5>
+                <p class="text-muted small">Try selecting another category or clear your search keyword.</p>
+                <div>
+                    <a href="{{ url_for('opportunities', category='all') }}" class="btn btn-outline-success rounded-pill btn-sm px-4">
+                        Reset All Filters
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

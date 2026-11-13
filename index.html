@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}CampusConnect — Smart College Information & Opportunity Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Hero Banner -->
+    <div class="hero-gradient p-4 p-md-5 mb-5 shadow">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <span class="badge bg-light text-primary fw-bold mb-3 px-3 py-2 rounded-pill shadow-sm">
+                    <i class="fa-solid fa-bolt me-1 text-warning"></i> AI/Rule-Powered Smart Filtering
+                </span>
+                <h1 class="display-5 fw-bold mb-3">Never miss a College Notice or Career Opportunity again.</h1>
+                <p class="lead mb-4 text-light opacity-90">
+                    One centralized campus portal that filters notices, exams, hackathons, internships, and scholarships tailored precisely to your <strong>Branch</strong>, <strong>Year</strong>, and <strong>Skills</strong>.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('register') }}" class="btn btn-warning btn-lg fw-bold px-4 text-dark shadow rounded-pill">
+                        <i class="fa-solid fa-user-plus me-2"></i> Join as Student
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg fw-semibold px-4 rounded-pill">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i> Portal Login
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 mt-4 mt-lg-0 text-center">
+                <div class="card bg-white text-dark p-4 shadow-lg border-0 rounded-4 text-start">
+                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                        <span class="fw-bold"><i class="fa-solid fa-sliders text-primary me-2"></i>Smart Personalization</span>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle">Active Engine</span>
+                    </div>
+                    <div class="small mb-3">
+                        <div class="text-muted mb-1">Student Context:</div>
+                        <div class="fw-semibold text-primary">B.Tech CSE • 2nd Year • Python, Web Dev</div>
+                    </div>
+                    <div class="p-2 mb-2 rounded bg-light border-start border-4 border-success small">
+                        <div class="fw-bold text-dark">🎯 SIH Hackathon 2026</div>
+                        <div class="text-success fw-bold" style="font-size: 0.78rem;">95% Profile Match • Closes in 2 days</div>
+                    </div>
+                    <div class="p-2 rounded bg-light border-start border-4 border-danger small">
+                        <div class="fw-bold text-dark">📢 DSA Assignment 3 Submission</div>
+                        <div class="text-danger fw-bold" style="font-size: 0.78rem;">Urgent • Due Tomorrow</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Statistics Counters -->
+    <div class="row g-4 mb-5 text-center">
+        <div class="col-6 col-md-3">
+            <div class="card p-3 h-100 border-0 shadow-sm">
+                <div class="display-6 fw-bold text-primary">{{ notices_count }}</div>
+                <div class="text-muted fw-medium mt-1"><i class="fa-solid fa-bullhorn text-primary me-1"></i> Active Notices</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card p-3 h-100 border-0 shadow-sm">
+                <div class="display-6 fw-bold text-success">{{ opps_count }}</div>
+                <div class="text-muted fw-medium mt-1"><i class="fa-solid fa-briefcase text-success me-1"></i> Opportunities</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card p-3 h-100 border-0 shadow-sm">
+                <div class="display-6 fw-bold text-info">{{ events_count }}</div>
+                <div class="text-muted fw-medium mt-1"><i class="fa-solid fa-calendar-star text-info me-1"></i> Campus Events</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card p-3 h-100 border-0 shadow-sm">
+                <div class="display-6 fw-bold text-warning">{{ students_count }}</div>
+                <div class="text-muted fw-medium mt-1"><i class="fa-solid fa-user-graduate text-warning me-1"></i> Registered Students</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Why CampusConnect Section -->
+    <div class="mb-5" id="features">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Why CampusConnect solves the Chaos?</h2>
+            <p class="text-muted">Moving away from scattered WhatsApp groups & lost Telegram messages</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 p-4 card-hover border-0 shadow-sm">
+                    <div class="text-primary mb-3 fs-2"><i class="fa-solid fa-bullhorn"></i></div>
+                    <h5 class="fw-bold">Smart Branch/Year Notice Board</h5>
+                    <p class="text-muted small">
+                        Notices are tagged by department, semester, and urgency. CSE students only see CSE notices, exams, and lab updates without spam.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 card-hover border-0 shadow-sm">
+                    <div class="text-success mb-3 fs-2"><i class="fa-solid fa-crosshairs"></i></div>
+                    <h5 class="fw-bold">Intelligent Skill Matching</h5>
+                    <p class="text-muted small">
+                        Opportunities are automatically scored against student skillsets. A Python developer gets notified of Python Hackathons and internships first.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 card-hover border-0 shadow-sm">
+                    <div class="text-danger mb-3 fs-2"><i class="fa-solid fa-hourglass-half"></i></div>
+                    <h5 class="fw-bold">Urgent Deadline Radar</h5>
+                    <p class="text-muted small">
+                        Real-time deadline indicators dynamically warn students 2-3 days before registration closes for hackathons, scholarships, and exam forms.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Preview Section -->
+    <div class="row g-4 mb-5" id="preview">
+        <div class="col-lg-6">
+            <div class="card h-100 p-4 border-0 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="fa-solid fa-bullhorn text-danger me-2"></i> Recent College Broadcasts
+                    </h5>
+                    <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for notice in recent_notices %}
+                        <div class="list-group-item px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <span class="badge badge-category cat-{{ notice.category|lower }}">{{ notice.category }}</span>
+                                <small class="text-muted">{{ notice.branch }} • {{ notice.year }}</small>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark">{{ notice.title }}</h6>
+                            <p class="text-muted small mb-1 text-truncate">{{ notice.description }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card h-100 p-4 border-0 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="fa-solid fa-fire text-warning me-2"></i> Trending Opportunities
+                    </h5>
+                    <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-success">Explore All</a>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for opp in featured_opps %}
+                        <div class="list-group-item px-0 py-3">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">{{ opp.category }}</span>
+                                <span class="badge bg-secondary-subtle text-secondary">{{ opp.organization }}</span>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark">{{ opp.title }}</h6>
+                            <div class="small text-muted mb-2">
+                                <i class="fa-solid fa-award text-warning me-1"></i> {{ opp.stipend_prize or 'Certificate of Merit' }}
+                            </div>
+                            <div class="d-flex flex-wrap">
+                                {% for skill in opp.required_skills.split(',')[:3] %}
+                                    {% if skill.strip() %}
+                                        <span class="skill-tag">{{ skill.strip() }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Credentials Hint for Viva / Testing -->
+    <div class="card bg-light border p-4 text-center">
+        <h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-key text-primary me-2"></i>Presentation / Quick Demo Accounts</h6>
+        <p class="text-muted small mb-3">Ready-to-use demo credentials seeded for examiners and presentation testing:</p>
+        <div class="d-flex flex-wrap justify-content-center gap-4">
+            <div class="badge bg-white text-dark p-2 border shadow-sm">
+                <strong class="text-primary">Admin:</strong> admin@campusconnect.edu | <code>admin123</code>
+            </div>
+            <div class="badge bg-white text-dark p-2 border shadow-sm">
+                <strong class="text-success">Student:</strong> student@campusconnect.edu | <code>student123</code>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
